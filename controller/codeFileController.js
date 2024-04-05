@@ -3,7 +3,7 @@ import User from "../model/userSChema.js";
 
 const createFile = async (req, res) => {
   const { filename, content, ownerId, fileType } = req.body;
-  if (!filename || !content || !fileType || !content || !ownerId) {
+  if (!filename || !fileType || !ownerId) {
     res.status(400).json({ success: false, msg: "Invalid Credentials" });
     return;
   }
@@ -11,7 +11,6 @@ const createFile = async (req, res) => {
   try {
     // i want to check that if file name is not exists in one user files
     const ownerUserFiles = await CodeFile.find({ ownerId });
-    console.log(ownerUserFiles.filter((elm) => elm.filename == filename));
     if (ownerUserFiles.filter((elm) => elm.filename == filename).length) {
       res.status(400).json({ success: false, msg: "File Name Already Exits" });
       return;
@@ -86,6 +85,7 @@ const updateFile = async (req, res) => {
   try {
     const fileUpdate = await CodeFile.findByIdAndUpdate(fileId, body, {
       new: true,
+      runValidators: true,
     }).populate("ownerId collaborators");
     if (!fileUpdate) {
       return res

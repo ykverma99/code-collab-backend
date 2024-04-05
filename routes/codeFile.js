@@ -14,7 +14,7 @@ router.post("/create", createFile);
 router.get("/file", getAllFiles);
 router.get("/file/:fileId", oneFile);
 router.get("/userfile/:userId", userFiles);
-router.patch("/file/:fileId", updateFile);
+router.put("/file/:fileId", updateFile);
 router.delete("/file/:fileId", deleteFile);
 
 export default router;
