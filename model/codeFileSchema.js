@@ -7,6 +7,12 @@ const codeFileSchema = new mongoose.Schema(
     content: { type: String },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     collaborators: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    messages: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Message",
+      },
+    ],
   },
   { timestamps: true }
 );
