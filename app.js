@@ -105,12 +105,37 @@ io.on("connection", (socket) => {
         { content },
         { new: true }
       );
-      console.log(updateFile.content);
       socket.broadcast
-        .to(fileId.toString())
+        // .to(fileId.toString())
         .emit("updateContentt", updateFile.content);
     } catch (error) {
       console.log("error sending message", error);
+    }
+  });
+
+  socket.on("cursorPosition", async (data) => {
+    try {
+      const { fileId, userId, position } = data;
+
+      // Validate that fileId, userId, and position are provided
+      if (!fileId || !userId || !position) {
+        throw new Error("Invalid cursor position data");
+      }
+
+      // Optionally, you can validate the format of position (e.g., position should be an object with 'x' and 'y' properties)
+
+      // Emit the cursor position to all other clients in the same file room
+      socket.to(fileId.toString()).emit("cursorPosition", userId, position);
+
+      // Log successful emission of cursor position
+      console.log(
+        `Cursor position updated for user ${userId} in file ${fileId}`
+      );
+    } catch (error) {
+      // Log any errors that occur during cursor position update
+      console.log("Error updating cursor position", error.message);
+      // Optionally, you can emit an error event back to the client who emitted the cursorPosition event
+      socket.emit("cursorPositionError", { message: error.message });
     }
   });
 
