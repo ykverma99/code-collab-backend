@@ -42,8 +42,6 @@ app.use("/file/api", file);
 // socket io code
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
-
   // join file room
   socket.on("joinFile", async (data) => {
     const { fileId, userId } = data;
@@ -72,14 +70,16 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async (data) => {
     try {
       const { fileId, userId, message } = data;
+      if (!fileId || !userId || !message) {
+        throw new Error("Please send all fields");
+      }
       const newMessage = new Message({
         sender: userId,
-        content: messageContent,
+        content: message,
       });
 
       // Save the message to the database
       const savedMessage = await newMessage.save();
-
       const updateFile = await CodeFile.findByIdAndUpdate(
         fileId,
         {
@@ -87,10 +87,15 @@ io.on("connection", (socket) => {
         },
         { new: true }
       );
-      io.to(fileId).emit("reciveMessage", {
+      socket.broadcast.emit("receiveMessage", {
+        fileId,
         userId,
-        message: savedMessage,
+        message: savedMessage.content,
       });
+      // socket.emit("receiveMessage", {
+      //   userId: savedMessage.sender,
+      //   message: savedMessage.content,
+      // });
     } catch (error) {
       console.log("Error sending message", error);
     }

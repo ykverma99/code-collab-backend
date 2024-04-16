@@ -34,7 +34,9 @@ const createFile = async (req, res) => {
 
 const getAllFiles = async (req, res) => {
   try {
-    const allFiles = await CodeFile.find().populate("ownerId collaborators");
+    const allFiles = await CodeFile.find().populate(
+      "ownerId collaborators messages"
+    );
     if (!allFiles.length) {
       return res.status(400).json({ success: false, msg: "No Files Found" });
     }
@@ -49,7 +51,7 @@ const userFiles = async (req, res) => {
   const { userId } = req.params;
   try {
     const ownerUserFiles = await CodeFile.find({ ownerId: userId }).populate(
-      "ownerId collaborators"
+      "ownerId collaborators messages"
     );
     if (!ownerUserFiles.length) {
       res.status(400).json({ success: false, msg: "No files" });
@@ -66,7 +68,7 @@ const oneFile = async (req, res) => {
   const { fileId } = req.params;
   try {
     const file = await CodeFile.findById(fileId).populate(
-      "ownerId collaborators"
+      "ownerId collaborators messages"
     );
     if (!file) {
       res.status(400).json({ success: false, msg: "No file Found" });
